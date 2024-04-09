@@ -197,7 +197,7 @@ process_bagging <- function(args, ...) {
 }
 
 process_data <- function(args, x, y, validation, missing_validation,
-                         early_stopping_round linear_tree) {
+                         early_stopping_round, linear_tree) {
   #                                           trn_index       | val_index
   #                                         ----------------------------------
   #  needs_validation &  missing_validation | 1:n               1:n
