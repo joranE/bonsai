@@ -28,6 +28,8 @@
 #' `TRUE` indicates that `mtry` will be interpreted in its sense as a _count_,
 #' `FALSE` indicates that the argument will be interpreted in its sense as a
 #' _proportion_.
+#' @param linear_tree boolean; if `TRUE` fit piecewise linear trees with a linear
+#' model in each leaf instead of a constant model
 #' @param quiet A logical; should logging by [lightgbm::lgb.train()] be muted?
 #' @param ... Other options to pass to [lightgbm::lgb.train()]. Arguments
 #' will be correctly routed to the `param` argument, or as a main argument,
@@ -39,7 +41,7 @@ train_lightgbm <- function(x, y, max_depth = -1, num_iterations = 100, learning_
                            feature_fraction_bynode = 1, min_data_in_leaf = 20,
                            min_gain_to_split = 0, bagging_fraction = 1,
                            early_stopping_round = NULL, validation = 0,
-                           counts = TRUE, quiet = FALSE, ...) {
+                           counts = TRUE, linear_tree = TRUE, quiet = FALSE, ...) {
 
   force(x)
   force(y)
@@ -81,7 +83,7 @@ train_lightgbm <- function(x, y, max_depth = -1, num_iterations = 100, learning_
   args <- process_bagging(args, ...)
 
   args <- process_data(args, x, y, validation, missing(validation),
-                       early_stopping_round)
+                       early_stopping_round, linear_tree = linear_tree)
 
   args <- sort_args(args)
 
@@ -195,7 +197,7 @@ process_bagging <- function(args, ...) {
 }
 
 process_data <- function(args, x, y, validation, missing_validation,
-                         early_stopping_round) {
+                         early_stopping_round linear_tree) {
   #                                           trn_index       | val_index
   #                                         ----------------------------------
   #  needs_validation &  missing_validation | 1:n               1:n
@@ -224,7 +226,7 @@ process_data <- function(args, x, y, validation, missing_validation,
       data = prepare_df_lgbm(x[trn_index, , drop = FALSE]),
       label = y[trn_index],
       categorical_feature = categorical_columns(x[trn_index, , drop = FALSE]),
-      params = list(feature_pre_filter = FALSE)
+      params = list(feature_pre_filter = FALSE, linear_tree = linear_tree)
     )
 
   if (!is.null(val_index)) {
@@ -234,7 +236,7 @@ process_data <- function(args, x, y, validation, missing_validation,
           data = prepare_df_lgbm(x[val_index, , drop = FALSE]),
           label = y[val_index],
           categorical_feature = categorical_columns(x[val_index, , drop = FALSE]),
-          params = list(feature_pre_filter = FALSE)
+          params = list(feature_pre_filter = FALSE, linear_tree = linear_tree)
         )
       )
   }
