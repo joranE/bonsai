@@ -17,6 +17,7 @@ train_lightgbm(
   early_stopping_round = NULL,
   validation = 0,
   counts = TRUE,
+  linear_tree = TRUE,
   quiet = FALSE,
   ...
 )
@@ -56,6 +57,9 @@ performance assessment and potential early stopping.}
 \code{TRUE} indicates that \code{mtry} will be interpreted in its sense as a \emph{count},
 \code{FALSE} indicates that the argument will be interpreted in its sense as a
 \emph{proportion}.}
+
+\item{linear_tree}{boolean; if \code{TRUE} fit piecewise linear trees with a linear
+model in each leaf instead of a constant model}
 
 \item{quiet}{A logical; should logging by \code{\link[lightgbm:lgb.train]{lightgbm::lgb.train()}} be muted?}
 
